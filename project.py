@@ -293,8 +293,8 @@ if you want more information type "help"
 if you would like to convert bitcoin to pounds, press "B"
 
 input: """
-        ).ignorecase()
-        if currency_input == "p":
+        )
+        if currency_input == "P" or "p":
             pounds = float(input("how much money would you like to convert: "))
             pound_converter = MoneyConverter(pounds)
             bitcoin = pound_converter.pounds_to_bitcoin()
@@ -304,7 +304,7 @@ input: """
                 f"you have successfully converted £{pounds} into bitcoin which has been deposited into the blockchain"
             )
             commands()
-        elif currency_input == "b":
+        elif currency_input == "B" or "b":
             bitcoin = float(input("how much crypto would you like to convert: "))
             bitcoin_converter = MoneyConverter(bitcoin)
             pounds = bitcoin_converter.bitcoin_to_pounds()
@@ -365,38 +365,38 @@ class Games:
     def difficulty_grabber(self, difficulty):
         if difficulty == "easy":
             return random.randint(0, 9)
-        if difficulty == "medium":
+        elif difficulty == "medium":
             return random.randint(10, 99)
-        if difficulty == "hard":
+        elif difficulty == "hard":
             return random.randint(100, 999)
 
     def multiplier(self, difficulty, score, mode):
         if difficulty == "easy":
             if mode == "addition":
                 return score * 100 * self.rank
-            if mode == "subtraction":
+            elif mode == "subtraction":
                 return score * 200 * self.rank
-            if mode == "multiplication":
+            elif mode == "multiplication":
                 return score * 300 * self.rank
-            if mode == "division":
+            elif mode == "division":
                 return score * 400 * self.rank
         elif difficulty == "medium":
             if mode == "addition":
                 return score * 200 * self.rank
-            if mode == "subtraction":
+            elif mode == "subtraction":
                 return score * 400 * self.rank
-            if mode == "multiplication":
+            elif mode == "multiplication":
                 return score * 600 * self.rank
-            if mode == "division":
+            elif mode == "division":
                 return score * 800 * self.rank
         elif difficulty == "hard":
             if mode == "addition":
                 return score * 300 * self.rank
-            if mode == "subtraction":
+            elif mode == "subtraction":
                 return score * 600 * self.rank
-            if mode == "multiplication":
+            elif mode == "multiplication":
                 return score * 900 * self.rank
-            if mode == "division":
+            elif mode == "division":
                 return score * 1200 * self.rank
 
     def save_rank(self):
@@ -621,10 +621,10 @@ class Shops:
             item_number = int(item)
             if item_number in range(1, len(self.item_names) + 1):
                 item = self.item_names[item_number - 1]
-        except ValueError as error:
+        except ValueError:
             if item not in self.item_names:
                 print(f"{item} not found in item list.")
-                raise error
+                return
         return self.item_prices[item] * quantity
 
     def sales(self, item, quantity):
@@ -949,29 +949,29 @@ class ProfileViewer:
                 rank = 0
         if rank in range(0, 9):
             return f"-Level {rank} Civilian-"
-        if rank in range(10, 24):
+        elif rank in range(10, 24):
             return f"-Level {rank} Merchant-"
-        if rank in range(25, 49):
+        elif rank in range(25, 49):
             return f"-Level {rank} Officer-"
-        if rank in range(50, 99):
+        elif rank in range(50, 99):
             return f"-Level {rank} Knight-"
-        if rank in range(100, 149):
+        elif rank in range(100, 149):
             return f"-Level {rank} Noble-"
-        if rank in range(150, 249):
+        elif rank in range(150, 249):
             return f"-Level {rank} Sir-"
-        if rank in range(250, 499):
+        elif rank in range(250, 499):
             return f"-Level {rank} Lord-"
-        if rank in range(500, 999):
+        elif rank in range(500, 999):
             return f"-Level {rank} Baron-"
-        if rank in range(999, 1499):
+        elif rank in range(999, 1499):
             return f"-Level {rank} Duke-"
-        if rank in range(1500, 2499):
+        elif rank in range(1500, 2499):
             return f"-Level {rank} Prince-"
-        if rank in range(2500, 4999):
+        elif rank in range(2500, 4999):
             return f"-Level {rank} King-"
-        if rank in range(5000, 9999):
+        elif rank in range(5000, 9999):
             return f"-Level {rank} Emperor-"
-        if rank > 10000:
+        elif rank > 10000:
             return f"-Level {rank} Overlord-"
 
     def inventory_getter(self):
