@@ -231,6 +231,7 @@ if you want more information type "help"
 .bear in mind the minimum spend on converting money is £1000"
 """
             )
+            self.market()
         else:
             self.market()
 
