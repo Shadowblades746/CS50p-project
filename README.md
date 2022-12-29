@@ -2,12 +2,11 @@
 ### Video Demo:  <URL HERE>
 ### -Description-
 
-#### .In this program, there is one simple goal: to get as rich as possible!
+#### In this program, there is one simple goal: to get as rich as possible!
 
 ### -commands-
 
 #### commands allow you to choose where you want to go. you can go to the welcome screen by suffixing "_w". below are all the commands that you need:
-
 
 - /home - this brings you back home
 - /games - this brings you to the games
@@ -29,7 +28,7 @@
 
 ### -rank system-
 
- - you get a higher rank based on how good you do in the games which depends on your score
+- you get a higher rank based on how good you do in the games which depends on your score
 - your score is added to your rank level every time you complete one of the games
 - when playing games, the higher your rank level, the more money you earn per game
 
