@@ -1,26 +1,35 @@
-from tabulate import tabulate
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+# pylint: disable=super-init-not-called
+# pylint: disable=unidiomatic-typecheck
+# pylint: disable=too-many-lines
+# pylint: disable=line-too-long
+
+
 from datetime import datetime
-import requests
 import random
 import csv
 import sys
-import json
+from tabulate import tabulate
+import requests
+
 
 
 def main():
-    welcome = Welcome()
+    Welcome()
 
 
 def commands():
     print("")
     command = input("command: ")
-    print("") 
+    print("")
     if command == "/exit":
-        sys.exit
+        sys.exit()
     elif command == "/home_w":
-        welcome = Welcome()
+        Welcome()
     elif command == "/home":
-        welcome = Welcome()
+        Welcome()
     elif command == "/games_w":
         gamehouse = Gamehouse()
         gamehouse.welcome()
@@ -34,28 +43,28 @@ def commands():
         market = Market()
         market.option()
     elif command == "/money_w":
-        money_market = Money_market()
+        money_market = MoneyMarket()
         money_market.welcome()
     elif command == "/money":
-        money_market = Money_market()
+        money_market = MoneyMarket()
         money_market.market()
     elif command == "/pv_w":
-        profile_viewer = Profile_viewer()
+        profile_viewer = ProfileViewer()
         profile_viewer.welcome()
     elif command == "/pv":
-        profile_viewer = Profile_viewer()
+        profile_viewer = ProfileViewer()
         profile_viewer.view()
     else:
         raise ValueError("invalid command")
 
 
-class Money_converter:
+class MoneyConverter:
     def __init__(self, count=0):
         self.count = count
 
     def bitcoin_to_pounds(self):
         bitcoin = self.count
-        response = requests.get("https://api.coindesk.com/v1/bpi/currentprice.json")
+        response = requests.get("https://api.coindesk.com/v1/bpi/currentprice.json", timeout=10)
         output = response.json()
         rate_float = output["bpi"]["GBP"]["rate_float"]
         return round(float(bitcoin) * rate_float, 2)
@@ -65,7 +74,7 @@ class Money_converter:
             raise ValueError("minimum spend is £1000")
         else:
             pounds = self.count
-            response = requests.get("https://api.coindesk.com/v1/bpi/currentprice.json")
+            response = requests.get("https://api.coindesk.com/v1/bpi/currentprice.json", timeout=10)
             output = response.json()
             rate_float = output["bpi"]["GBP"]["rate_float"]
             return round(float(pounds) / rate_float, 2)
@@ -81,16 +90,16 @@ class Money_converter:
         self._count = count
 
 
-class Fiat_bank:
+class FiatBank:
     def __init__(self):
         try:
-            with open("fiat_balance.csv", "r", newline='') as f:
-                reader = csv.reader(f)
+            with open("fiat_balance.csv", "r", newline='', encoding="utf-8") as file:
+                reader = csv.reader(file)
                 self.balance = float(next(reader)[0])
                 self.last_added_at = datetime.strptime(next(reader)[0], "%Y-%m-%d")
         except FileNotFoundError:
-            with open("fiat_balance.csv", "w", newline='') as f:
-                writer = csv.writer(f)
+            with open("fiat_balance.csv", "w", newline='', encoding="utf-8") as file:
+                writer = csv.writer(file)
                 writer.writerow([0])
                 writer.writerow([datetime.now().strftime("%Y-%m-%d")])
                 self.balance = 0
@@ -139,22 +148,22 @@ class Fiat_bank:
             print(f"Interest added: £{interest_added:.2f}")
 
     def save_balance(self):
-        with open("fiat_balance.csv", "w", newline='') as f:
-            writer = csv.writer(f)
+        with open("fiat_balance.csv", "w", newline='', encoding="utf-8") as file:
+            writer = csv.writer(file)
             writer.writerow([self.balance])
             writer.writerow([self.last_added_at.strftime("%Y-%m-%d")])
 
 
-class Crypto_bank(Fiat_bank):
+class CryptoBank(FiatBank):
     def __init__(self):
         try:
-            with open("crypto_balance.csv", "r", newline='') as f:
-                reader = csv.reader(f)
+            with open("crypto_balance.csv", "r", newline='', encoding="utf-8") as file:
+                reader = csv.reader(file)
                 self.balance = float(next(reader)[0])
                 self.last_added_at = datetime.strptime(next(reader)[0], "%Y-%m-%d")
         except FileNotFoundError:
-            with open("crypto_balance.csv", "w", newline='') as f:
-                writer = csv.writer(f)
+            with open("crypto_balance.csv", "w", newline='', encoding="utf-8") as file:
+                writer = csv.writer(file)
                 writer.writerow([0])
                 writer.writerow([datetime.now().strftime("%Y-%m-%d")])
                 self.balance = 0
@@ -164,35 +173,35 @@ class Crypto_bank(Fiat_bank):
         return f"₿{self.balance}"
 
     def save_balance(self):
-        with open("crypto_balance.csv", "w", newline='') as f:
-            writer = csv.writer(f)
+        with open("crypto_balance.csv", "w", newline='', encoding="utf-8") as file:
+            writer = csv.writer(file)
             writer.writerow([self.balance])
             writer.writerow([self.last_added_at.strftime("%Y-%m-%d")])
 
 
-class Wallet(Fiat_bank):
+class Wallet(FiatBank):
     def __init__(self):
         try:
-            with open("wallet_balance.csv", "r", newline='') as f:
-                reader = csv.reader(f)
+            with open("wallet_balance.csv", "r", newline='', encoding="utf-8") as file:
+                reader = csv.reader(file)
                 self.balance = float(next(reader)[0])
                 self.last_added_at = datetime.strptime(next(reader)[0], "%Y-%m-%d")
         except FileNotFoundError:
-            with open("wallet_balance.csv", "w", newline='') as f:
-                writer = csv.writer(f)
+            with open("wallet_balance.csv", "w", newline='', encoding="utf-8") as file:
+                writer = csv.writer(file)
                 writer.writerow([0])
                 writer.writerow([datetime.now().strftime("%Y-%m-%d")])
                 self.balance = 0
                 self.last_added_at = datetime.now()
 
     def save_balance(self):
-        with open("wallet_balance.csv", "w", newline='') as f:
-            writer = csv.writer(f)
+        with open("wallet_balance.csv", "w", newline='', encoding="utf-8") as file:
+            writer = csv.writer(file)
             writer.writerow([self.balance])
             writer.writerow([self.last_added_at.strftime("%Y-%m-%d")])
 
 
-class Money_market:
+class MoneyMarket:
     def __init__(self):
         pass
 
@@ -237,7 +246,7 @@ if you want more information type "help"
         if "convert" in task:
             self.convert()
         else:
-            sys.exit
+            raise ValueError("invalid input")
 
     def deposit(self):
         amount = input(
@@ -245,7 +254,7 @@ if you want more information type "help"
         )
         wallet = Wallet()
         wallet.withdraw(amount)
-        fiat_bank = Fiat_bank()
+        fiat_bank = FiatBank()
         fiat_bank.deposit(amount)
         print(f"you have successfully deposited £{amount} into your bank account")
         commands()
@@ -254,7 +263,7 @@ if you want more information type "help"
         amount = input(
             "how much money would you like to withdraw from your bank account: "
         )
-        fiat_bank = Fiat_bank()
+        fiat_bank = FiatBank()
         fiat_bank.withdraw(amount)
         wallet = Wallet()
         wallet.deposit(amount)
@@ -263,8 +272,8 @@ if you want more information type "help"
 
     def balance(self):
         wallet = Wallet()
-        fiat_bank = Fiat_bank()
-        crypto_bank = Crypto_bank()
+        fiat_bank = FiatBank()
+        crypto_bank = CryptoBank()
         wallet_balance = wallet.check_balance()
         fiat_balance = fiat_bank.check_balance()
         crypto_balance = crypto_bank.check_balance()
@@ -277,8 +286,8 @@ if you want more information type "help"
         commands()
 
     def convert(self):
-        fiat_bank = Fiat_bank()
-        crypto_bank = Crypto_bank()
+        fiat_bank = FiatBank()
+        crypto_bank = CryptoBank()
         currency_input = input(
             """if you would like to convert pounds to bitcoin, press "P"
 if you would like to convert bitcoin to pounds, press "B"
@@ -287,7 +296,7 @@ input: """
         )
         if currency_input == "P" or "p":
             pounds = float(input("how much money would you like to convert: "))
-            pound_converter = Money_converter(pounds)
+            pound_converter = MoneyConverter(pounds)
             bitcoin = pound_converter.pounds_to_bitcoin()
             fiat_bank.withdraw(pounds)
             crypto_bank.deposit(bitcoin)
@@ -297,7 +306,7 @@ input: """
             commands()
         elif currency_input == "B" or "b":
             bitcoin = float(input("how much crypto would you like to convert: "))
-            bitcoin_converter = Money_converter(bitcoin)
+            bitcoin_converter = MoneyConverter(bitcoin)
             pounds = bitcoin_converter.bitcoin_to_pounds()
             crypto_bank.withdraw(bitcoin)
             fiat_bank.deposit(pounds)
@@ -312,12 +321,12 @@ input: """
 class Games:
     def __init__(self):
         try:
-            with open("rank.csv", "r", newline='') as f:
-                reader = csv.reader(f)
+            with open("rank.csv", "r", newline='', encoding="utf-8") as file:
+                reader = csv.reader(file)
                 self.rank = int(next(reader)[0])
         except FileNotFoundError:
-            with open("rank.csv", "w", newline='') as f:
-                writer = csv.writer(f)
+            with open("rank.csv", "w", newline='', encoding="utf-8") as file:
+                writer = csv.writer(file)
                 writer.writerow([0])
                 self.rank = 0
 
@@ -391,13 +400,13 @@ class Games:
                 return score * 1200 * self.rank
 
     def save_rank(self):
-        with open("rank.csv", "w", newline='') as f:
-            writer = csv.writer(f)
+        with open("rank.csv", "w", newline='', encoding="utf-8") as file:
+            writer = csv.writer(file)
             writer.writerow([self.rank])
 
     def addition(self, difficulty):
         score = 0
-        for i in range(10):
+        for _ in range(10):
             num1 = self.difficulty_grabber(difficulty)
             num2 = self.difficulty_grabber(difficulty)
             answer = int(input(f"{num1} + {num2} = "))
@@ -420,7 +429,7 @@ class Games:
 
     def subtraction(self, difficulty):
         score = 0
-        for i in range(10):
+        for _ in range(10):
             num1 = self.difficulty_grabber(difficulty)
             num2 = self.difficulty_grabber(difficulty)
             if num1 < num2:
@@ -448,7 +457,7 @@ class Games:
 
     def multiplication(self, difficulty):
         score = 0
-        for i in range(10):
+        for _ in range(10):
             num1 = self.difficulty_grabber(difficulty)
             num2 = self.difficulty_grabber(difficulty)
             answer = int(input(f"{num1} * {num2} = "))
@@ -474,7 +483,7 @@ class Games:
             'please type your answer correct to 1 decimal place - if it is an integer, add ".0" after'
         )
         score = 0
-        for i in range(10):
+        for _ in range(10):
             num1 = self.difficulty_grabber(difficulty)
             num2 = self.difficulty_grabber(difficulty)
             if num1 < num2:
@@ -581,7 +590,8 @@ class Shops:
             "yacht 🛳️",
             "private jet ✈️",
             "definitely not drugs 🍃",
-            "definitely not guns 🔫" "definitely not classified documents 🗎",
+            "definitely not guns 🔫",
+            "definitely not classified documents 🗎",
             "definitely not apache helicopter 🚁",
             "definately not military jet 🛦",
             "definately not aircraft carrier 🚢",
@@ -631,12 +641,12 @@ class Shops:
                 return
 
         try:
-            with open("inventory.csv", "r", newline='') as f:
-                reader = csv.DictReader(f)
+            with open("inventory.csv", "r", newline='', encoding="utf-8") as file:
+                reader = csv.DictReader(file)
                 inventory = list(reader)
         except FileNotFoundError:
-            with open("inventory.csv", "w", newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=["item", "quantity"])
+            with open("inventory.csv", "w", newline='', encoding="utf-8") as file:
+                writer = csv.DictWriter(file, fieldnames=["item", "quantity"])
                 writer.writeheader()
                 writer.writerow({"item": item, "quantity": quantity})
             return
@@ -649,15 +659,15 @@ class Shops:
                 break
         if not item_found:
             inventory.append({"item": item, "quantity": quantity})
-        with open("inventory.csv", "w", newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=["item", "quantity"])
+        with open("inventory.csv", "w", newline='', encoding="utf-8") as file:
+            writer = csv.DictWriter(file, fieldnames=["item", "quantity"])
             writer.writeheader()
             for i in inventory:
                 writer.writerow(i)
 
     def shop_buy(self, item, quantity, price):
         wallet = Wallet()
-        bank = Fiat_bank()
+        bank = FiatBank()
         wallet_balance = wallet.check_int_balance()
         if wallet_balance - price < 0:
             bank_balance = wallet.check_int_balance()
@@ -679,7 +689,7 @@ class Shops:
         print(f"you have successfully sold {quantity} {item} for £{price}")
 
     def black_market_buy(self, item, quantity, price):
-        crypto_bank = Crypto_bank()
+        crypto_bank = CryptoBank()
         crypto_balance = crypto_bank.check_int_balance()
         if crypto_balance - price < 0:
             raise ValueError(
@@ -689,7 +699,7 @@ class Shops:
         print(f"you have successfully bought {quantity} {item} for ₿{price}")
 
     def black_market_sell(self, item, quantity, price):
-        crypto_bank = Crypto_bank()
+        crypto_bank = CryptoBank()
         crypto_bank.deposit(price)
         print(f"you have successfully sold {quantity} {item} for ₿{price}")
 
@@ -776,13 +786,13 @@ here we can buy or sell goods!
                     quantity = int(
                         input("how much of this item would you like to buy: ")
                     )
-                except:
-                    raise ValueError
+                except Exception as error:
+                    raise ValueError from error
                 item_name = markets.get_item_name(item)
                 try:
                     price = markets.get_price(item, quantity)
-                except TypeError:
-                    raise ValueError("invalid item")
+                except Exception as error:
+                    raise ValueError from error
                 print(f"that will cost £{price}")
                 proceed = input(
                     'if you would like to proceed with the purchase, type "yes" otherwise type "no": '
@@ -803,13 +813,13 @@ here we can buy or sell goods!
                     quantity = int(
                         input("how much of this item would you like to sell: ")
                     )
-                except:
-                    raise ValueError
+                except Exception as error:
+                    raise ValueError from error
                 item_name = markets.get_item_name(item)
                 try:
                     price = markets.get_price(item, quantity)
-                except TypeError:
-                    raise ValueError("invalid item")
+                except Exception as error:
+                    raise ValueError from error
                 price = markets.get_price(item, quantity)
                 print(f"that will sell for £{price}")
                 proceed = input(
@@ -837,13 +847,13 @@ here we can buy or sell goods!
                     quantity = int(
                         input("how much of this item would you like to buy: ")
                     )
-                except:
-                    raise ValueError
+                except Exception as error:
+                    raise ValueError from error
                 item_name = markets.get_item_name(item)
                 try:
                     price = markets.get_price(item, quantity)
-                except TypeError:
-                    raise ValueError("invalid item")
+                except Exception as error:
+                    raise ValueError from error
                 print(f"that will cost ₿{price}")
                 proceed = input(
                     'if you would like to proceed with the purchase, type "yes" otherwise type "no": '
@@ -864,13 +874,13 @@ here we can buy or sell goods!
                     quantity = int(
                         input("how much of this item would you like to sell: ")
                     )
-                except:
-                    raise ValueError
+                except Exception as error:
+                    raise ValueError from error
                 item_name = markets.get_item_name(item)
                 try:
                     price = markets.get_price(item, quantity)
-                except TypeError:
-                    raise ValueError("invalid item")
+                except Exception as error:
+                    raise ValueError from error
                 price = markets.get_price(item, quantity)
                 print(f"that will sell for ₿{price}")
                 proceed = input(
@@ -891,7 +901,7 @@ here we can buy or sell goods!
             raise ValueError("invalid action")
 
 
-class Profile_viewer:
+class ProfileViewer:
     def __init__(self):
         pass
 
@@ -920,21 +930,21 @@ class Profile_viewer:
             inventory_lines += [""] * (max_lines - len(inventory_lines))
         if len(funds_lines) < max_lines:
             funds_lines += [""] * (max_lines - len(funds_lines))
-        s = f"{rank}"
+        string = f"{rank}"
         print(f"\033[1m{rank}\033[0m")
-        print("=" * len(s))
+        print("=" * len(string))
         for i in range(max_lines):
             print(f"{inventory_lines[i]:<20s}   {funds_lines[i]:<20s}")
         commands()
 
     def rank_getter(self):
         try:
-            with open("rank.csv", "r", newline='') as f:
-                reader = csv.reader(f)
+            with open("rank.csv", "r", newline='', encoding="utf-8") as file:
+                reader = csv.reader(file)
                 rank = int(next(reader)[0])
         except FileNotFoundError:
-            with open("rank.csv", "w", newline='') as f:
-                writer = csv.writer(f)
+            with open("rank.csv", "w", newline='', encoding="utf-8") as file:
+                writer = csv.writer(file)
                 writer.writerow([0])
                 rank = 0
         if rank in range(0, 9):
@@ -966,8 +976,8 @@ class Profile_viewer:
 
     def inventory_getter(self):
         try:
-            with open("inventory.csv", "r", newline='') as f:
-                reader = csv.DictReader(f)
+            with open("inventory.csv", "r", newline='', encoding="utf-8") as file:
+                reader = csv.DictReader(file)
                 inventory = list(reader)
             table = []
             for row in inventory:
@@ -979,8 +989,8 @@ class Profile_viewer:
 
     def banks_getter(self):
         wallet = Wallet()
-        fiat_bank = Fiat_bank()
-        crypto_bank = Crypto_bank()
+        fiat_bank = FiatBank()
+        crypto_bank = CryptoBank()
         wallet_balance = wallet.check_balance()
         fiat_balance = fiat_bank.check_balance()
         crypto_balance = crypto_bank.check_balance()
@@ -1053,7 +1063,7 @@ here you can do things like:
 .your rank
 """
         )
-        fiat_bank = Fiat_bank()
+        fiat_bank = FiatBank()
         fiat_bank.add_interest()
         commands()
 
